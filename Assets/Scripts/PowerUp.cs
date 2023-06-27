@@ -35,7 +35,6 @@ public class PowerUp : MonoBehaviour
             Player player = other.GetComponent<Player>();
             if (player != null)
             {
-                _powerupID = 2;
                 switch(_powerupID)
                 {
                     case 0:

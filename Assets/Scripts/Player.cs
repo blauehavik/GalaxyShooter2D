@@ -10,8 +10,6 @@ public class Player : MonoBehaviour
     private float _speedMultiplier = 2.0f;
     private float _thrustMultiplier = 2.0f;
     [SerializeField]
-    private GameObject _laserPrefab;
-    [SerializeField]
     private GameObject _tripleShotPrefab;
     [SerializeField]
     private float _cooldownTime = .2f;
@@ -49,9 +47,16 @@ public class Player : MonoBehaviour
     [SerializeField]
     private UIManager _uiManager;
 
+    [Header("Laser Variables")]
+    [SerializeField]
+    private GameObject _laserPrefab;
     [SerializeField]
     private AudioClip _laserAudio;
+    [SerializeField]
+    private AudioClip _laserEmptyAudio;
     private AudioSource _audioSource;
+    private int _ammoCount = 15;
+    private int _maxAmmo = 15;
 
     void Start()
     {
@@ -122,15 +127,28 @@ public class Player : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space) && Time.time > _nextFireTime)
         {
+
             _nextFireTime = Time.time + _cooldownTime;
-            if (_isTripleShotActive == true)
+            if (_isTripleShotActive == true && _ammoCount >= 3)
             {
                 Instantiate(_tripleShotPrefab, transform.position, Quaternion.identity);
+                _ammoCount -= 3;
+                _audioSource.clip = _laserAudio;
+                _audioSource.Play();
+                _uiManager.UpdateAmmoCount(_ammoCount);
+                return;
             }
-            else
+            else if (_ammoCount >= 1)
             {
                 Instantiate(_laserPrefab, transform.position + new Vector3(0, 0.75f, 0), Quaternion.identity);
+                _ammoCount--;
+                _audioSource.clip = _laserAudio;
+                _audioSource.Play();
+                _uiManager.UpdateAmmoCount(_ammoCount);
+
+                return;
             }
+            _audioSource.clip = _laserEmptyAudio; ;
             _audioSource.Play();
         }
     }
