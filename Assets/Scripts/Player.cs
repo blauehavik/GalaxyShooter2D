@@ -8,6 +8,7 @@ public class Player : MonoBehaviour
     [SerializeField]
     private float _speed = 5.0f;
     private float _speedMultiplier = 2.0f;
+    private float _thrustMultiplier = 2.0f;
     [SerializeField]
     private GameObject _laserPrefab;
     [SerializeField]
@@ -19,6 +20,8 @@ public class Player : MonoBehaviour
     private int _lives = 3;
     [SerializeField]
     private GameObject _leftEngine, _rightEngine;
+    [SerializeField]
+    private GameObject _thruster;
 
     private SpawnManager _spawnManager;
 
@@ -76,16 +79,25 @@ public class Player : MonoBehaviour
         float horizontalInput = Input.GetAxis("Horizontal");
         float verticalInput = Input.GetAxis("Vertical");
 
+        float totalSpeed = _speed;
+        Vector3 thrusterScale = new Vector3(1f, 1.5f, 1f);
+
+        if (_isSpeedBoostActive == true)
+        {
+            totalSpeed *= _speedMultiplier;
+        }
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            totalSpeed *= _thrustMultiplier;
+            _thruster.transform.localScale = thrusterScale;
+        }
+        if (Input.GetKeyUp(KeyCode.LeftShift))
+        {
+            _thruster.transform.localScale = Vector3.one;
+        }
         Vector3 direction = new Vector3(horizontalInput, verticalInput, 0);
 
-        if (_isSpeedBoostActive == false)
-        {
-            transform.Translate(direction * _speed * Time.deltaTime);
-        }
-        else
-        {
-            transform.Translate(direction * _speed * _speedMultiplier * Time.deltaTime);
-        }
+        transform.Translate(direction * totalSpeed * Time.deltaTime);
 
         transform.position = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y, -3.5f, 0), 0);
 
