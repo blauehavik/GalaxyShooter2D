@@ -1650,8 +1650,8 @@ MonoBehaviour:
   _leftEngine: {fileID: 257241983}
   _rightEngine: {fileID: 1748951590}
   _thruster: {fileID: 1951348196}
-  _isShieldActive: 0
-  shieldVisualizer: {fileID: 873130364}
+  _shieldLevel: 0
+  _shieldVisualizer: {fileID: 873130364}
   _tripleShotResetTime: 5
   _speedBoostResetTime: 5
   _score: 0

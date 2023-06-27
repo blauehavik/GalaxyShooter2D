@@ -28,14 +28,19 @@ public class Player : MonoBehaviour
     private bool _isTripleShotActive = false;
     private bool _isSpeedBoostActive = false;
     [SerializeField]
-    private bool _isShieldActive = false;
-
+    private int _shieldLevel = 0;
     [SerializeField]
-    private GameObject shieldVisualizer;
+    private GameObject _shieldVisualizer;
+    private SpriteRenderer _shieldSpriteRenderer;
+    private Color[] _spriteColor = new Color[]
+    {
+        new Color (1,1,1,.25f), new Color (1,1,1,.5f),
+        new Color (1,1,1,.75f), new Color (1,1,1,1f)
+    };
 
     [SerializeField]
     private float _tripleShotResetTime = 5.0f;
-    [SerializeField]
+    [SerializeField] 
     private float _speedBoostResetTime = 5.0f;
 
     [SerializeField]
@@ -54,6 +59,8 @@ public class Player : MonoBehaviour
         _spawnManager = GameObject.Find("Spawn_Manager").GetComponent<SpawnManager>();
         _uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
         _audioSource = GetComponent<AudioSource>();
+        _shieldSpriteRenderer = _shieldVisualizer.
+            GetComponent<SpriteRenderer>();
 
         if (_uiManager == null)
         {
@@ -130,10 +137,15 @@ public class Player : MonoBehaviour
 
     public void Damage()
     {
-        if (_isShieldActive == true)
+        if (_shieldLevel > 0)
         {
-            _isShieldActive = false;
-            shieldVisualizer.SetActive(false);
+            _shieldLevel--;
+            _shieldSpriteRenderer.color =
+                    _spriteColor[_shieldLevel];
+            if (_shieldLevel <= 0)
+            {
+                _shieldVisualizer.SetActive(false);
+            }
             return;
         }
         _lives--;
@@ -180,8 +192,12 @@ public class Player : MonoBehaviour
     }
     public void ShieldsActive()
     {
-        _isShieldActive = true;
-        shieldVisualizer.SetActive(true);
+        if (_shieldLevel <= 3)
+        {
+            _shieldLevel++;
+        }
+        _shieldVisualizer.SetActive(true);
+        _shieldSpriteRenderer.color = _spriteColor[_shieldLevel];
     }
     public void AddToScore(int points)
     {
