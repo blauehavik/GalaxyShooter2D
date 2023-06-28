@@ -6,22 +6,14 @@ public class PowerUp : MonoBehaviour
 {
     [SerializeField]
     private float _speed = 3.0f;
-
     [SerializeField] // 0 = triple shot 1 = speed 2 = shields
     private int _powerupID;
-
     [SerializeField]
     private AudioClip _powerupClip;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
     void Update()
     {
         transform.Translate(Vector3.down * _speed * Time.deltaTime);
-
         if (transform.position.y < -5f)
         {
             Destroy(this.gameObject);
@@ -52,5 +44,4 @@ public class PowerUp : MonoBehaviour
             Destroy(this.gameObject);
         }
     }
-
 }

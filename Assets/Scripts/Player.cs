@@ -7,11 +7,8 @@ public class Player : MonoBehaviour
     [Header("Player Variables")]
     [SerializeField]
     private float _speed = 5.0f;
-    private float _speedMultiplier = 2.0f;
     private float _thrustMultiplier = 2.0f;
-    [SerializeField]
-    private GameObject _tripleShotPrefab;
-    [SerializeField]
+    private int _score = 0;
     private float _cooldownTime = .2f;
     private float _nextFireTime = -1f;
     [SerializeField]
@@ -21,31 +18,30 @@ public class Player : MonoBehaviour
     [SerializeField]
     private GameObject _thruster;
 
+    [Header("Manager Variables")]
+    [SerializeField]
+    private UIManager _uiManager;
     private SpawnManager _spawnManager;
 
+    [Header("Powerup Variables")]
     private bool _isTripleShotActive = false;
     private bool _isSpeedBoostActive = false;
     [SerializeField]
+    private GameObject _tripleShotPrefab;
+    private float _speedMultiplier = 2.0f;
     private int _shieldLevel = 0;
     [SerializeField]
     private GameObject _shieldVisualizer;
     private SpriteRenderer _shieldSpriteRenderer;
     private Color[] _spriteColor = new Color[]
-    {
-        new Color (1,1,1,.25f), new Color (1,1,1,.5f),
-        new Color (1,1,1,.75f), new Color (1,1,1,1f)
-    };
-
+        {
+            new Color (1,1,1,.25f), new Color (1,1,1,.5f),
+            new Color (1,1,1,.75f), new Color (1,1,1,1f)
+        };
     [SerializeField]
     private float _tripleShotResetTime = 5.0f;
     [SerializeField] 
     private float _speedBoostResetTime = 5.0f;
-
-    [SerializeField]
-    private int _score = 0;
-
-    [SerializeField]
-    private UIManager _uiManager;
 
     [Header("Laser Variables")]
     [SerializeField]
@@ -67,6 +63,10 @@ public class Player : MonoBehaviour
         _shieldSpriteRenderer = _shieldVisualizer.
             GetComponent<SpriteRenderer>();
 
+        if (_spawnManager == null)
+        {
+            Debug.LogError("SpawnManager is null");
+        }
         if (_uiManager == null)
         {
             Debug.LogError("UI Manager is NULL.");
@@ -77,6 +77,10 @@ public class Player : MonoBehaviour
         }else
         {
             _audioSource.clip = _laserAudio;
+        }
+        if (_shieldSpriteRenderer == null)
+        {
+            Debug.LogError("Shield SpriteRenderer is null.");
         }
     }
 
@@ -127,11 +131,11 @@ public class Player : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space) && Time.time > _nextFireTime)
         {
-
             _nextFireTime = Time.time + _cooldownTime;
             if (_isTripleShotActive == true && _ammoCount >= 3)
             {
-                Instantiate(_tripleShotPrefab, transform.position, Quaternion.identity);
+                Instantiate(_tripleShotPrefab,
+                    transform.position, Quaternion.identity);
                 _ammoCount -= 3;
                 _audioSource.clip = _laserAudio;
                 _audioSource.Play();
@@ -140,12 +144,13 @@ public class Player : MonoBehaviour
             }
             else if (_ammoCount >= 1)
             {
-                Instantiate(_laserPrefab, transform.position + new Vector3(0, 0.75f, 0), Quaternion.identity);
+                Instantiate(_laserPrefab,
+                    transform.position + new Vector3(0, 0.75f, 0),
+                    Quaternion.identity);
                 _ammoCount--;
                 _audioSource.clip = _laserAudio;
                 _audioSource.Play();
                 _uiManager.UpdateAmmoCount(_ammoCount);
-
                 return;
             }
             _audioSource.clip = _laserEmptyAudio; ;
@@ -175,9 +180,7 @@ public class Player : MonoBehaviour
         {
             _rightEngine.SetActive(true);
         }
-
         _uiManager.UpdateLives(_lives);
-        //Debug.Log("Player lives: " + _lives);
         if (_lives <1)
         {
             _spawnManager.OnPlayerDied();
@@ -196,6 +199,7 @@ public class Player : MonoBehaviour
         yield return new WaitForSeconds(_tripleShotResetTime);
         _isTripleShotActive = false;
     }
+
     public void SpeedBoostActive()
     {
         _isSpeedBoostActive = true;
@@ -208,6 +212,7 @@ public class Player : MonoBehaviour
         _isSpeedBoostActive = false;
 
     }
+
     public void ShieldsActive()
     {
         if (_shieldLevel <= 3)
@@ -217,6 +222,7 @@ public class Player : MonoBehaviour
         _shieldVisualizer.SetActive(true);
         _shieldSpriteRenderer.color = _spriteColor[_shieldLevel];
     }
+
     public void AddToScore(int points)
     {
         _score += points;

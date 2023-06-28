@@ -7,14 +7,14 @@ public class GameManager : MonoBehaviour
 {
     private bool _isGameover = false;
 
-    // Update is called once per frame
     void Update()
     {
         if (_isGameover == true)
         {
             if (Input.GetKeyDown(KeyCode.R))
             {
-                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+                SceneManager.LoadScene(
+                    SceneManager.GetActiveScene().name);
             }
             if (Input.GetKeyDown(KeyCode.Escape))
             {
