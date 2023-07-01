@@ -7,7 +7,6 @@ public class Player : MonoBehaviour
     [Header("Player Variables")]
     [SerializeField]
     private float _speed = 5.0f;
-    private float _thrustMultiplier = 2.0f;
     private int _score = 0;
     private float _cooldownTime = .2f;
     private float _nextFireTime = -1f;
@@ -15,8 +14,9 @@ public class Player : MonoBehaviour
     private int _lives = 3;
     [SerializeField]
     private GameObject _leftEngine, _rightEngine;
-    [SerializeField]
-    private GameObject _thruster;
+    //[SerializeField]
+    //private CameraEffects _cameraEffects;
+    public CameraShake _cameraShake;
 
     [Header("Manager Variables")]
     [SerializeField]
@@ -25,6 +25,7 @@ public class Player : MonoBehaviour
 
     [Header("Powerup Variables")]
     private bool _isTripleShotActive = false;
+    private bool _isSuperShotActive = false;
     private bool _isSpeedBoostActive = false;
     [SerializeField]
     private GameObject _tripleShotPrefab;
@@ -40,8 +41,16 @@ public class Player : MonoBehaviour
         };
     [SerializeField]
     private float _tripleShotResetTime = 5.0f;
+    [SerializeField]
+    private float _superShotResetTime = 5.0f;
     [SerializeField] 
     private float _speedBoostResetTime = 5.0f;
+
+    [Header("Thruster Variables")]
+    [SerializeField]
+    private GameObject _thruster;
+    private float _thrustMultiplier = 2.0f;
+    private int _thrustFuel, _thrustMax = 200;
 
     [Header("Laser Variables")]
     [SerializeField]
@@ -102,10 +111,21 @@ public class Player : MonoBehaviour
         {
             totalSpeed *= _speedMultiplier;
         }
-        if (Input.GetKey(KeyCode.LeftShift))
+        if (Input.GetKey(KeyCode.LeftShift) && _thrustFuel > 0)
         {
             totalSpeed *= _thrustMultiplier;
             _thruster.transform.localScale = thrusterScale;
+            _thrustFuel -= 2;
+            _uiManager.UpdateThrustCount(
+                (float)_thrustFuel/(float)_thrustMax);
+        }
+        else
+        {
+            if (_thrustFuel <= _thrustMax)
+            {
+                _uiManager.UpdateThrustCount(
+                     (float)_thrustFuel++ /(float)_thrustMax);
+            }
         }
         if (Input.GetKeyUp(KeyCode.LeftShift))
         {
@@ -140,6 +160,22 @@ public class Player : MonoBehaviour
                 _audioSource.clip = _laserAudio;
                 _audioSource.Play();
                 _uiManager.UpdateAmmoCount(_ammoCount);
+                return;
+            }
+            else if (_isSuperShotActive == true)
+            {
+                Instantiate(_laserPrefab, transform.position,
+                    Quaternion.Euler(new Vector3(0, 0, 0)));
+                Instantiate(_laserPrefab, transform.position,
+                    Quaternion.Euler(new Vector3(0, 0, 45)));
+                Instantiate(_laserPrefab, transform.position,
+                    Quaternion.Euler(new Vector3(0, 0, -45)));
+                Instantiate(_laserPrefab, transform.position,
+                    Quaternion.Euler(new Vector3(0, 0, 30)));
+                Instantiate(_laserPrefab, transform.position,
+                    Quaternion.Euler(new Vector3(0, 0, -30)));
+                _audioSource.clip = _laserAudio;
+                _audioSource.Play();
                 return;
             }
             else if (_ammoCount >= 1)
@@ -181,10 +217,11 @@ public class Player : MonoBehaviour
             _rightEngine.SetActive(true);
         }
         _uiManager.UpdateLives(_lives);
-        if (_lives <1)
+        StartCoroutine(_cameraShake.Shake(.3f, .5f));
+        if (_lives < 1)
         {
             _spawnManager.OnPlayerDied();
-            Destroy(this.gameObject);
+            Destroy(this.gameObject, .3f);
         }
     }
 
@@ -198,6 +235,18 @@ public class Player : MonoBehaviour
     {
         yield return new WaitForSeconds(_tripleShotResetTime);
         _isTripleShotActive = false;
+    }
+
+    public void SuperShotActive()
+    {
+        _isSuperShotActive = true;
+        StartCoroutine(SuperShotCooldownRoutine());
+    }
+
+    IEnumerator SuperShotCooldownRoutine()
+    {
+        yield return new WaitForSeconds(_superShotResetTime);
+        _isSuperShotActive = false;
     }
 
     public void SpeedBoostActive()
@@ -221,6 +270,29 @@ public class Player : MonoBehaviour
         }
         _shieldVisualizer.SetActive(true);
         _shieldSpriteRenderer.color = _spriteColor[_shieldLevel];
+    }
+
+    public void AmmoReload()
+    {
+        _ammoCount = _maxAmmo;
+        _uiManager.UpdateAmmoCount(_ammoCount);
+    }
+
+    public void HealthBoost()
+    {
+        if (_lives < 3)
+        {
+            _lives++;
+            if (_lives == 3)
+            {
+                _leftEngine.SetActive(false);
+            }
+            else if (_lives == 2)
+            {
+                _rightEngine.SetActive(false);
+            }
+            _uiManager.UpdateLives(_lives);
+        }
     }
 
     public void AddToScore(int points)

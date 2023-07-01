@@ -11,6 +11,8 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private TMP_Text _ammoText;
     [SerializeField]
+    private TMP_Text _thrustText;
+    [SerializeField]
     private Image _livesImage;
     [SerializeField]
     private Sprite[] _livesSprites;
@@ -20,12 +22,16 @@ public class UIManager : MonoBehaviour
     private TMP_Text _restart_Text;
     [SerializeField]
     private GameManager _gameManager;
+    [SerializeField]
+    private Slider _thrustSlider;
 
     void Start()
     {
         _gameManager = GameObject.Find("Game_Manager").GetComponent<GameManager>();
         _scoreText.text = "Score: 0";
         _ammoText.text = "Ammo: 15";
+        _thrustText.text = "Thrust:";
+        _thrustSlider.value = 0f;
         _gameover_Text.gameObject.SetActive(false);
         _restart_Text.gameObject.SetActive(false);
 
@@ -43,6 +49,12 @@ public class UIManager : MonoBehaviour
     public void UpdateAmmoCount(int ammo)
     {
         _ammoText.text = "Ammo: " + ammo;
+    }
+
+    public void UpdateThrustCount(float thrust)
+    {
+        //_thrustText.text = "Thrust: " + thrust;
+        _thrustSlider.value = thrust;
     }
 
     public void UpdateLives(int currentLives)

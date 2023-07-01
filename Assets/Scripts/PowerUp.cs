@@ -38,6 +38,15 @@ public class PowerUp : MonoBehaviour
                     case 2:
                         player.ShieldsActive();
                         break;
+                    case 3:
+                        player.AmmoReload();
+                        break;
+                    case 4:
+                        player.HealthBoost();
+                        break;
+                    case 5:
+                        player.SuperShotActive();
+                        break;
                 }
             }
             AudioSource.PlayClipAtPoint(_powerupClip, transform.position);
