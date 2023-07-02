@@ -26,9 +26,19 @@ public class SpawnManager : MonoBehaviour
         yield return new WaitForSeconds(Random.Range(3f, 8f));
         while (_stopSpawning == false)
         {
+            GameObject newEnemy;
             float randomX = Random.Range(-8f, 8f);
-            GameObject newEnemy = Instantiate(_enemyPrefab,
-                new Vector3(randomX, 8f, 0), Quaternion.identity);
+            if (Random.Range(0f,1f) > .1f)
+            {
+                 newEnemy = Instantiate(_enemyPrefab,
+                    new Vector3(randomX, 8f, 0), Quaternion.identity);
+            }
+            else
+            {
+                 newEnemy = Instantiate(_enemyPrefab,
+                    new Vector3(randomX, 8f, 0), Quaternion.Euler(
+                    new Vector3(0, 0, Random.Range(-45, 46))));
+            }
             newEnemy.transform.parent = _enemyContainer.transform;
             yield return new WaitForSeconds(5f);
        }

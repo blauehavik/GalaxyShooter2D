@@ -53,7 +53,6 @@ public class UIManager : MonoBehaviour
 
     public void UpdateThrustCount(float thrust)
     {
-        //_thrustText.text = "Thrust: " + thrust;
         _thrustSlider.value = thrust;
     }
 

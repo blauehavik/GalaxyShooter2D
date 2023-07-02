@@ -25,7 +25,7 @@ MonoBehaviour:
     defaultState: 1
   tonemapper:
     overrideState: 1
-    value: 2
+    value: 1
   toneCurveToeStrength:
     overrideState: 1
     value: 0
@@ -65,7 +65,7 @@ MonoBehaviour:
     value: 0
   saturation:
     overrideState: 1
-    value: 0
+    value: 0.8
   brightness:
     overrideState: 1
     value: 0
@@ -1344,10 +1344,10 @@ MonoBehaviour:
     value: 1
   intensity:
     overrideState: 1
-    value: 1
+    value: 3
   threshold:
     overrideState: 1
-    value: 1
+    value: 0.5
   softKnee:
     overrideState: 1
     value: 0.5
