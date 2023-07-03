@@ -9,8 +9,6 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private TMP_Text _scoreText;
     [SerializeField]
-    private TMP_Text _ammoText;
-    [SerializeField]
     private TMP_Text _thrustText;
     [SerializeField]
     private Image _livesImage;
@@ -25,9 +23,20 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private Slider _thrustSlider;
 
+    [Header("Ammo")]
+    [SerializeField]
+    private TMP_Text _ammoText;
+    [SerializeField]
+    private GameObject _ammoContainer;
+    [SerializeField]
+    private Image[] _ammoImages;
+    [SerializeField]
+    private Sprite _ammoFull;
+    [SerializeField]
+    private Sprite _ammoEmpty;
+
     void Start()
     {
-        _gameManager = GameObject.Find("Game_Manager").GetComponent<GameManager>();
         _scoreText.text = "Score: 0";
         _ammoText.text = "Ammo: 15";
         _thrustText.text = "Thrust:";
@@ -35,10 +44,21 @@ public class UIManager : MonoBehaviour
         _gameover_Text.gameObject.SetActive(false);
         _restart_Text.gameObject.SetActive(false);
 
+        _gameManager = GameObject.Find("Game_Manager").GetComponent<GameManager>();
         if (_gameManager == null)
         {
             Debug.LogError("GameManager os NULL:.");
         }
+
+        _ammoImages =
+            _ammoContainer.GetComponentsInChildren<Image>();
+        Debug.Log(_ammoImages.Length);
+        if (_ammoImages == null)
+        {
+            Debug.LogError("Ammo sprites is null!");
+            //Debug.Break();
+        }
+
     }
 
     public void UpdateScore(int score)
@@ -49,6 +69,18 @@ public class UIManager : MonoBehaviour
     public void UpdateAmmoCount(int ammo)
     {
         _ammoText.text = "Ammo: " + ammo;
+
+        for (int i = 0; i < _ammoImages.Length; i++)
+        {
+            if (i < ammo)
+            {
+                _ammoImages[i].sprite = _ammoFull;
+            }
+            else
+            {
+                _ammoImages[i].sprite = _ammoEmpty;
+            }
+        }
     }
 
     public void UpdateThrustCount(float thrust)
