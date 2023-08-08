@@ -27,6 +27,7 @@ public class Player : MonoBehaviour
     private bool _isTripleShotActive = false;
     private bool _isSuperShotActive = false;
     private bool _isSpeedBoostActive = false;
+    private bool _isSlowActive = false;
     [SerializeField]
     private GameObject _tripleShotPrefab;
     private float _speedMultiplier = 2.0f;
@@ -130,6 +131,10 @@ public class Player : MonoBehaviour
         if (Input.GetKeyUp(KeyCode.LeftShift))
         {
             _thruster.transform.localScale = Vector3.one;
+        }
+        if (_isSlowActive == true)
+        {
+            totalSpeed *= .3f;
         }
         Vector3 direction = new Vector3(horizontalInput, verticalInput, 0);
 
@@ -261,10 +266,22 @@ public class Player : MonoBehaviour
         _isSpeedBoostActive = false;
 
     }
+    public void SlowActive()
+    {
+        _isSlowActive = true;
+        StartCoroutine(SlowCooldownRoutine());
+    }
+
+    IEnumerator SlowCooldownRoutine()
+    {
+        yield return new WaitForSeconds(_speedBoostResetTime*2f);
+        _isSlowActive = false;
+
+    }
 
     public void ShieldsActive()
     {
-        if (_shieldLevel <= 3)
+        if (_shieldLevel < 3)
         {
             _shieldLevel++;
         }

@@ -17,6 +17,10 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private TMP_Text _gameover_Text;
     [SerializeField]
+    private TMP_Text _waveText;
+    [SerializeField]
+    private TMP_Text _nextWaveText;
+    [SerializeField]
     private TMP_Text _restart_Text;
     [SerializeField]
     private GameManager _gameManager;
@@ -40,6 +44,7 @@ public class UIManager : MonoBehaviour
         _scoreText.text = "Score: 0";
         _ammoText.text = "Ammo: 15";
         _thrustText.text = "Thrust:";
+        _waveText.text = "Wave: 1";
         _thrustSlider.value = 0f;
         _gameover_Text.gameObject.SetActive(false);
         _restart_Text.gameObject.SetActive(false);
@@ -50,15 +55,12 @@ public class UIManager : MonoBehaviour
             Debug.LogError("GameManager os NULL:.");
         }
 
-        _ammoImages =
-            _ammoContainer.GetComponentsInChildren<Image>();
-        Debug.Log(_ammoImages.Length);
+        _ammoImages = _ammoContainer.
+            GetComponentsInChildren<Image>();
         if (_ammoImages == null)
         {
             Debug.LogError("Ammo sprites is null!");
-            //Debug.Break();
         }
-
     }
 
     public void UpdateScore(int score)
@@ -69,7 +71,6 @@ public class UIManager : MonoBehaviour
     public void UpdateAmmoCount(int ammo)
     {
         _ammoText.text = "Ammo: " + ammo;
-
         for (int i = 0; i < _ammoImages.Length; i++)
         {
             if (i < ammo)
@@ -90,8 +91,11 @@ public class UIManager : MonoBehaviour
 
     public void UpdateLives(int currentLives)
     {
-        _livesImage.sprite = _livesSprites[currentLives];
-        if (currentLives <= 0)
+        if (currentLives >= 1)
+        {
+            _livesImage.sprite = _livesSprites[currentLives];
+        }
+        else
         {
             GameOverSequence();
         }
@@ -125,4 +129,20 @@ public class UIManager : MonoBehaviour
             }
         }
     }
+
+    public void UpdateWave(int wave)
+    {
+        _waveText.text = ("Wave: " + wave);
+        StartCoroutine(ShowNextWave());
+    }
+
+    IEnumerator ShowNextWave()
+    {
+        _nextWaveText.gameObject.SetActive(true);
+        yield return new WaitForSeconds(.5f);
+        _nextWaveText.gameObject.SetActive(false);
+        yield return 0;
+    }
+
+
 }

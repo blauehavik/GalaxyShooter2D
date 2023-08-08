@@ -47,6 +47,9 @@ public class PowerUp : MonoBehaviour
                     case 5:
                         player.SuperShotActive();
                         break;
+                    case 6:
+                        player.SlowActive();
+                        break;
                 }
             }
             AudioSource.PlayClipAtPoint(_powerupClip, transform.position);
